@@ -13,21 +13,27 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+MODEL_PATH = os.path.join(BASE_DIR, "diabetes_model.h5")
 
 # FastAPI app setup
 app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
 
-# Mount static and template directories
+# Mount static files only if directory exists
+if os.path.isdir(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+else:
+    print(f"⚠️ Warning: Static directory not found at {STATIC_DIR}. Skipping static mount.")
+
+# Set up Jinja2 templates
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Load trained model
+if os.path.exists(MODEL_PATH):
+    model = tf.keras.models.load_model(MODEL_PATH)
+else:
+    raise FileNotFoundError(f"❌ Model file not found at {MODEL_PATH}")
 
-# Load UAE-trained model
-model = tf.keras.models.load_model(os.path.join(BASE_DIR, "diabetes_model.h5"))
-
-# Diabetes advice knowledge base
+# Diabetes advice based on risk level
 DIABETES_KNOWLEDGE = {
     "low": [
         "Maintain traditional Emirati diet with portion control",
@@ -49,25 +55,24 @@ async def home(request: Request):
         "current_date": datetime.now(pytz.timezone("Asia/Dubai")).strftime("%d %B %Y")
     })
 
-# Analyze form data and predict diabetes risk
+# Analyze route for diabetes prediction
 @app.post("/analyze", response_class=HTMLResponse)
 async def analyze(request: Request,
                  age: int = Form(...),
                  bmi: float = Form(...),
                  glucose: int = Form(...),
                  hba1c: float = Form(...)):
-    
     try:
-        # Validate UAE-specific ranges
+        # Validate inputs
         if not 18 <= age <= 120:
-            raise ValueError("Age must be 18-120 (DHA guidelines)")
+            raise ValueError("Age must be between 18 and 120 (per DHA guidelines).")
         if not 15 <= bmi <= 45:
-            raise ValueError("BMI must be 15-45")
-        
-        # Predict risk
+            raise ValueError("BMI must be between 15 and 45.")
+
+        # Make prediction
         input_data = np.array([[age, bmi, glucose, hba1c]])
         risk = float(model.predict(input_data)[0][0]) * 100
-        
+
         return templates.TemplateResponse("results.html", {
             "request": request,
             "risk": f"{risk:.1f}%",
@@ -78,7 +83,7 @@ async def analyze(request: Request,
                 "Rashid Hospital - 04 219 3000"
             ]
         })
-    
+
     except Exception as e:
         return templates.TemplateResponse("error.html", {
             "request": request,
@@ -86,6 +91,6 @@ async def analyze(request: Request,
             "dha_contact": "800342"
         })
 
-# Run the app
+# Run the app locally
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
