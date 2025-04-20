@@ -6,3 +6,4 @@ tensorflow
 pytz
 streamlit
 requests
+python-multipart
