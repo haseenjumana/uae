@@ -10,7 +10,7 @@ import uvicorn
 
 app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
 templates = Jinja2Templates(directory="templates")
-app("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Load UAE-trained model
 model = tf.keras.models.load_model("diabetes_model.h5")
