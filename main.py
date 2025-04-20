@@ -29,7 +29,9 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # Load trained model
 if os.path.exists(MODEL_PATH):
-    model = tf.keras.models.load_model(MODEL_PATH)
+    model = tf.keras.models.load_model(MODEL_PATH)# Run the app locally
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
 else:
     raise FileNotFoundError(f"❌ Model file not found at {MODEL_PATH}")
 
@@ -91,6 +93,4 @@ async def analyze(request: Request,
             "dha_contact": "800342"
         })
 
-# Run the app locally
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
