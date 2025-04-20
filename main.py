@@ -9,16 +9,22 @@ from datetime import datetime
 import uvicorn
 import os
 
-app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
-templates = Jinja2Templates(directory="templates")
+# Define base directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# FastAPI app setup
+app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
+
+# Mount static and template directories
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Load UAE-trained model
-model = tf.keras.models.load_model("diabetes_model.h5")
+model = tf.keras.models.load_model(os.path.join(BASE_DIR, "diabetes_model.h5"))
 
+# Diabetes advice knowledge base
 DIABETES_KNOWLEDGE = {
     "low": [
         "Maintain traditional Emirati diet with portion control",
@@ -32,6 +38,7 @@ DIABETES_KNOWLEDGE = {
     ]
 }
 
+# Home route
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {
@@ -39,6 +46,7 @@ async def home(request: Request):
         "current_date": datetime.now(pytz.timezone("Asia/Dubai")).strftime("%d %B %Y")
     })
 
+# Analyze form data and predict diabetes risk
 @app.post("/analyze", response_class=HTMLResponse)
 async def analyze(request: Request,
                  age: int = Form(...),
@@ -75,5 +83,6 @@ async def analyze(request: Request,
             "dha_contact": "800342"
         })
 
+# Run the app
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
