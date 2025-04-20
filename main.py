@@ -19,6 +19,9 @@ app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
 
 # Mount static and template directories
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Load UAE-trained model
