@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>طبيب السكري الإماراتي</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇦🇪 الذكاء الاصطناعي لمرض السكري</h1>
+            <h2>UAE Diabetes AI Doctor</h2>
+            <p class="date">{{ current_date }}</p>
+        </header>
+
+        <form method="post" action="/analyze" class="diabetes-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>العمر / Age (18-120)</label>
+                    <input type="number" name="age" required min="18" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label>مؤشر كتلة الجسم / BMI (15-45)</label>
+                    <input type="number" step="0.1" name="bmi" required min="15" max="45">
+                </div>
+
+                <div class="form-group">
+                    <label>الجلوكوز / Glucose (70-300 mg/dL)</label>
+                    <input type="number" name="glucose" required min="70" max="300">
+                </div>
+
+                <div class="form-group">
+                    <label>الهيموغلوبين السكري / HbA1c (4-14%)</label>
+                    <input type="number" step="0.1" name="hba1c" required min="4" max="14">
+                </div>
+            </div>
+
+            <button type="submit" class="analyze-btn">
+                تحليل المخاطر / Analyze Risk
+            </button>
+        </form>
+    </div>
+</body>
+</html>

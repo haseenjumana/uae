@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>النتائج</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="result-card">
+            <h2>نتائج تحليل السكري</h2>
+            <h3>Diabetes Analysis Results</h3>
+            
+            <div class="risk-level">
+                <span class="risk-value">{{ risk }}</span>
+                <span class="risk-label">نسبة الخطورة / Risk Score</span>
+            </div>
+
+            <div class="recommendations">
+                <h4>التوصيات الطبية / Medical Advice:</h4>
+                <ul>
+                    {% for item in advice %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="clinics">
+                <h4>العيادات الموصى بها / Recommended Clinics:</h4>
+                <ul>
+                    {% for clinic in clinics %}
+                    <li>{{ clinic }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="emergency">
+                <p>🚨 الطوارئ / Emergency: {{ emergency }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
