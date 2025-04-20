@@ -7,9 +7,13 @@ import numpy as np
 import pytz
 from datetime import datetime
 import uvicorn
+import os
 
 app = FastAPI(title="🇦🇪 UAE Diabetes Doctor", version="2.2.0")
 templates = Jinja2Templates(directory="templates")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Load UAE-trained model
